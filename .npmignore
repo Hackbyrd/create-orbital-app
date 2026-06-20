@@ -1,0 +1,8 @@
+# Don't publish dev files
+node_modules/
+.DS_Store
+*.log
+coverage/
+
+# Keep template/ — it must be included in the published package
+# (do NOT add template/ here)

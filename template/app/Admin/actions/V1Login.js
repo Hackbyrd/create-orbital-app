@@ -1,0 +1,123 @@
+/**
+ * ADMIN V1Login ACTION
+ */
+
+'use strict';
+
+// ENV variables
+const { ADMIN_WEB_HOSTNAME } = process.env;
+
+// third-party
+const joi = require('joi'); // argument validator: https://hapi.dev/family/joi/
+const moment = require('moment-timezone'); // manage timezone and dates: https://momentjs.com/timezone/docs/
+const passport = require('passport'); // handle authentication: http://www.passportjs.org/docs/
+
+// services
+const { ERROR_CODES, errorResponse } = require('../../../services/error');
+
+// helpers
+const { createJwtToken } = require('../../../helpers/logic');
+
+// models
+const models = require('../../../models');
+
+// methods
+module.exports = {
+  V1Login
+}
+
+/**
+ * Login an admin
+ *
+ * GET  /v1/admins/login
+ * POST /v1/admins/login
+ *
+ * Use req.__('') or res.__('') for i18n language translations (DON'T require('i18n') since it is already attached to the req & res objects): https://github.com/mashpie/i18n-node
+ *
+ * Must be logged out
+ * Roles: []
+ *
+ * req.params = {}
+ * req.args = {
+ *   @email - (STRING - REQUIRED): The email of the admin,
+ *   @password - (STRING - REQUIRED): The unhashed password of the admin
+ * }
+ *
+ * Success: Return an admin and JWT token.
+ * Errors:
+ *   400: BAD_REQUEST_INVALID_ARGUMENTS
+ *   400: ADMIN_BAD_REQUEST_INVALID_LOGIN_CREDENTIALS
+ *   400: ADMIN_BAD_REQUEST_ACCOUNT_INACTIVE
+ *   400: ADMIN_BAD_REQUEST_ACCOUNT_DELETED
+ *   500: INTERNAL_SERVER_ERROR
+ */
+async function V1Login(req, res) {
+  const schema = joi.object({
+    email: joi.string().email().required(),
+    password: joi.string().required()
+  });
+
+  // validate
+  const { error, value } = schema.validate(req.args);
+  if (error) {
+    return errorResponse(req, ERROR_CODES.BAD_REQUEST_INVALID_ARGUMENTS, joiErrorsMessage(error));
+  }
+  req.args = value; // arguments are updated and variable types are converted to correct type. ex. '5' -> 5, 'true' -> true
+
+  // need to wrap in promise because of the passport.authenticate callback
+  return new Promise((resolve, reject) => {
+
+    // login admin WITHOUT SESSION
+    passport.authenticate('JWTAdminLogin', { session: false }, async (err, admin, info) => {
+      if (err)
+        return reject(err);
+
+      // check if admin exists
+      if (!admin)
+        return resolve(errorResponse(req, ERROR_CODES.ADMIN_BAD_REQUEST_INVALID_LOGIN_CREDENTIALS));
+
+      // return error message if admin is inactive
+      if (!admin.active)
+        return resolve(errorResponse(req, ERROR_CODES.ADMIN_BAD_REQUEST_ACCOUNT_INACTIVE));
+
+      // return error message if admin is deleted
+      if (admin.deletedAt)
+        return resolve(errorResponse(req, ERROR_CODES.ADMIN_BAD_REQUEST_ACCOUNT_DELETED));
+
+      // update login count and last login
+      try {
+        await models.admin.update({
+          loginCount: admin.loginCount + 1,
+          lastLogin: moment.tz('UTC')
+        }, {
+          where: {
+            id: admin.id
+          }
+        });
+
+        // find admin
+        const updatedAdmin = await models.admin.findByPk(admin.id, {
+          attributes: {
+            exclude: models.admin.getSensitiveData() // remove sensitive data
+          }
+        });
+
+        // create token
+        const token = createJwtToken(updatedAdmin, ADMIN_WEB_HOSTNAME);
+
+        // set cookie for frontend
+        res.cookie('jwt-admin', token);
+
+        // return success
+        return resolve({
+          status: 201,
+          success: true,
+          token: token,
+          admin: updatedAdmin.dataValues
+        });
+      } catch (error) {
+        return reject(error);
+      }
+    })(req, res, null);
+  }); // END Promise
+} // END V1Login

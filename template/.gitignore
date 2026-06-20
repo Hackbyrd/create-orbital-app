@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment
+config/.env.*
+!config/.env.template
+
+# Database
+database/backups/
+
+# Generated
+locales/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Build
+dist/
+
+# Test coverage
+coverage/
