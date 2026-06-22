@@ -1,7 +1,5 @@
 'use strict';
 
-const { execa } = await import('execa');
-
 function toSnakeCase(str) {
   return str.replace(/[-\s]+/g, '_');
 }
@@ -41,18 +39,9 @@ function printError(msg) {
   console.error('\x1b[31m' + `Error: ${msg}` + '\x1b[0m');
 }
 
-async function runYarnInstall(targetDir) {
-  const child = execa('yarn', ['install'], {
-    cwd: targetDir,
-    stdio: 'inherit',
-  });
-  await child;
-}
-
 module.exports = {
   toSnakeCase,
   toPascalCase,
   printSuccess,
   printError,
-  runYarnInstall,
 };
