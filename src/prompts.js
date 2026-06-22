@@ -51,6 +51,7 @@ async function runPrompts({ projectName } = {}) {
       message: 'Additional integrations:',
       choices: [
         { name: 'Socket.IO / Real-time',    value: 'socketio', checked: true },
+        { name: 'Sentry (Error tracking)',  value: 'sentry' },
         { name: 'Stripe (Payments)',         value: 'stripe' },
         { name: 'AWS S3 (File storage)',     value: 'aws-s3' },
         { name: 'Twilio (SMS)',              value: 'twilio' },

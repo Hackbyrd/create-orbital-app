@@ -1,5 +1,6 @@
 'use strict'
 
+const { applySentry } = require('./sentry')
 const { applyGoogleOAuth } = require('./google-oauth')
 const { applyMicrosoftOAuth } = require('./microsoft-oauth')
 const { applyAppleOAuth } = require('./apple-oauth')
@@ -17,6 +18,7 @@ const { applyAnthropic } = require('./anthropic')
 const { applyOpenAI } = require('./openai')
 
 module.exports = {
+  applySentry,
   applyGoogleOAuth,
   applyMicrosoftOAuth,
   applyAppleOAuth,

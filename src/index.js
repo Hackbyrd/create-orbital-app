@@ -10,6 +10,7 @@ const { runPrompts } = require('./prompts');
 const { copyTemplate, replaceTokens, removeAdminFeature, removeSocketIO } = require('./scaffold');
 
 const INTEGRATION_MODULES = {
+  sentry:       { apply: require('./integrations/sentry').applySentry },
   google_oauth: { apply: require('./integrations/google-oauth').applyGoogleOAuth },
   sendgrid:     { apply: require('./integrations/sendgrid').applySendGrid },
   stripe:       { apply: require('./integrations/stripe').applyStripe },
