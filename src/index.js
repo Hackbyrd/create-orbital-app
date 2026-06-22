@@ -14,7 +14,6 @@ const INTEGRATION_MODULES = {
   google_oauth: require('./integrations/google-oauth'),
   sendgrid: require('./integrations/sendgrid'),
   stripe: require('./integrations/stripe'),
-  sentry: require('./integrations/sentry'),
   aws_s3: require('./integrations/aws-s3'),
 };
 
