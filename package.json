@@ -1,6 +1,6 @@
 {
   "name": "create-orbital-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Create a new Orbital Express API project",
   "bin": {
     "create-orbital-app": "bin/create-orbital-app.js"
