@@ -39,7 +39,7 @@ module.exports = {
  */
 async function V1UpdateMyDepartments(req, res) {
   const schema = joi.object({
-    departmentIds: joi.array().items(joi.string().uuid({ version: 'uuidv4' })).required()
+    departmentIds: joi.array().items(joi.string().uuid({ version: 'uuidv7' })).required()
   });
 
   const { error, value } = schema.validate(req.args);

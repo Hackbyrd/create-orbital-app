@@ -10,7 +10,6 @@ module.exports = {
           type: DataTypes.UUID,
           primaryKey: true,
           allowNull: false,
-          defaultValue: DataTypes.UUIDV4,
         },
         adminId: {
           type: DataTypes.UUID,

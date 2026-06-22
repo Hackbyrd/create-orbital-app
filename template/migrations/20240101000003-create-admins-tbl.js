@@ -10,7 +10,6 @@ module.exports = {
           type: DataTypes.UUID,
           primaryKey: true,
           allowNull: false,
-          defaultValue: DataTypes.UUIDV4,
         },
         role: {
           type: DataTypes.STRING,
