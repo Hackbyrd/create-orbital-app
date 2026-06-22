@@ -2,8 +2,8 @@
 
 const inquirer = require('inquirer');
 
-async function runPrompts(argv) {
-  const defaultProjectName = argv._[0] || argv.name || 'my-api';
+async function runPrompts(argv = {}) {
+  const defaultProjectName = (argv._ && argv._[0]) || argv.name || 'my-api';
 
   const answers = await inquirer.prompt([
     {
